@@ -1,0 +1,16 @@
+{
+  "name": "rag-job-assistant",
+  "private": true,
+  "description": "Run both apps from the repo root: npm run setup, then npm run dev",
+  "scripts": {
+    "setup": "npm install && npm --prefix server install && npm --prefix web install",
+    "dev": "concurrently -k -n api,web -c green,cyan \"npm --prefix server run dev\" \"npm --prefix web run dev\"",
+    "seed": "npm --prefix server run seed",
+    "eval": "npm --prefix server run eval",
+    "test": "npm --prefix server test",
+    "build": "npm --prefix server run build && npm --prefix web run build"
+  },
+  "devDependencies": {
+    "concurrently": "9.1.0"
+  }
+}

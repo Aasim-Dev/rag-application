@@ -47,7 +47,7 @@ flowchart LR
 | Frontend | React 18 + Vite + TypeScript (Vercel) |
 | API | Node.js 20, Express, TypeScript, Zod validation (Render) |
 | Vectors & search | PostgreSQL + pgvector (HNSW index) + full-text search (GIN index) |
-| AI | Google Gemini: `gemini-embedding-001` for embeddings, `gemini-2.5-flash` for answers, behind an `AiProvider` interface |
+| AI | Google Gemini: `gemini-embedding-001` for embeddings, `gemini-3.5-flash` for answers, behind an `AiProvider` interface |
 | Quality | Vitest unit tests, retrieval evaluation script, GitHub Actions CI with `npm audit` |
 
 ## Run locally
