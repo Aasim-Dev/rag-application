@@ -23,6 +23,7 @@ const cases: { question: string; expectDocument: string; expectText: string }[] 
 let hits = 0;
 let reciprocalRanks = 0;
 let grounded = 0;
+let lowestOnTopic = 1;
 for (const c of cases) {
   const chunks = await retrieve(c.question, K);
   const rank = chunks.findIndex(
@@ -41,15 +42,31 @@ for (const c of cases) {
     if (ok) grounded++;
     note = ok ? "  answer cited" : "  answer NOT grounded";
   }
-  console.log(`${rank >= 0 ? `hit @${rank + 1}` : "MISS  "}  ${c.question}${note}`);
+  const best = Math.max(...chunks.map((ch) => ch.similarity ?? 0), 0);
+  lowestOnTopic = Math.min(lowestOnTopic, best);
+  console.log(`${rank >= 0 ? `hit @${rank + 1}` : "MISS  "}  sim ${best.toFixed(3)}  ${c.question}${note}`);
 }
 
 console.log(`\nhit@${K}: ${((100 * hits) / cases.length).toFixed(0)}%   MRR: ${(reciprocalRanks / cases.length).toFixed(2)}`);
 if (withAnswers) console.log(`grounded answers with citations: ${grounded}/${cases.length}`);
 
 console.log("\nOff-topic questions (best similarity should stay below MIN_SIMILARITY):");
-for (const q of ["What is the capital of France?", "Give me a recipe for pasta", "Who won the 2018 World Cup?"]) {
+let highestOffTopic = 0;
+for (const q of [
+  "What is the capital of France?",
+  "Give me a recipe for pasta",
+  "Who won the 2018 World Cup?",
+  "How do I fix my car's brakes?",
+  "Explain quantum entanglement",
+]) {
   const best = Math.max(...(await retrieve(q, K)).map((c) => c.similarity ?? 0), 0);
+  highestOffTopic = Math.max(highestOffTopic, best);
   console.log(`  ${best.toFixed(3)}  ${q}`);
 }
+console.log(
+  `\nlowest on-topic best similarity: ${lowestOnTopic.toFixed(3)} | highest off-topic: ${highestOffTopic.toFixed(3)}` +
+    (lowestOnTopic > highestOffTopic
+      ? ` -> a MIN_SIMILARITY between them (e.g. ${((lowestOnTopic + highestOffTopic) / 2).toFixed(2)}) separates them`
+      : " -> they overlap: the threshold alone can't separate them"),
+);
 await pool.end();

@@ -3,7 +3,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import multer from "multer";
 import { ZodError } from "zod";
 import { AiError } from "./ai/gemini.js";
-import { config } from "./config.js";
+import { config, configError } from "./config.js";
 import { migrate, pool } from "./db.js";
 import { router } from "./routes.js";
 import { UnsupportedFileError } from "./services/extract.js";
@@ -13,6 +13,12 @@ const app = express();
 app.set("trust proxy", 1); // behind Render's / Vercel's proxy: lets rate limiting see the real client IP
 app.use(cors({ origin: config.CORS_ORIGIN.split(",").map((o) => o.trim()) }));
 app.use(express.json({ limit: "1mb" }));
+
+// A missing setting on Vercel: say exactly which one instead of crashing with an empty 500.
+app.use((_req, res, next) => {
+  if (configError) res.status(500).json({ error: `Server misconfigured: ${configError}` });
+  else next();
+});
 
 // Create the schema once per process, before the first request is handled. Lazy instead of at
 // startup because on Vercel the app runs as a serverless function with no separate startup step.

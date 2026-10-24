@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { z } from "zod";
 
-// Fail fast at startup with a clear message instead of failing on the first request.
 const Env = z.object({
   PORT: z.coerce.number().default(4000),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required (Postgres with pgvector)"),
@@ -15,9 +14,20 @@ const Env = z.object({
 });
 
 const parsed = Env.safeParse(process.env);
-if (!parsed.success) {
-  for (const issue of parsed.error.issues) console.error(`Config error: ${issue.path.join(".")}: ${issue.message}`);
-  process.exit(1);
+
+/**
+ * A readable description of missing/invalid settings, or null when the config is valid.
+ * Locally we fail fast at startup. On Vercel a crash while loading the function only shows up as an
+ * empty 500, so instead the app stays up and every request answers with this message (see index.ts).
+ */
+export const configError = parsed.success
+  ? null
+  : parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+
+if (configError) {
+  console.error(`Config error: ${configError}`);
+  if (!process.env.VERCEL) process.exit(1);
 }
 
-export const config = parsed.data;
+// When invalid (Vercel only), fall back to the defaults so modules can load; requests are refused anyway.
+export const config = (parsed.success ? parsed.data : Env.partial().parse({})) as z.infer<typeof Env>;
