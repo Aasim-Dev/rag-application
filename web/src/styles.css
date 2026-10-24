@@ -1,0 +1,65 @@
+/* Layout: two panels (documents | ask + answer) that stack on phones. Tokens below drive both themes. */
+:root {
+  --bg: #f5f6f3; --panel: #ffffff; --fg: #1d2420; --muted: #5d675f; --line: #dfe3dc;
+  --accent: #1f6f5c; --accent-soft: #e2f0eb; --cite: #b86a12; --cite-soft: #fbefdf; --danger: #a33a2c;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121614; --panel: #1a1f1c; --fg: #e5ebe6; --muted: #9aa69d; --line: #2b332e;
+    --accent: #5fc2a6; --accent-soft: #1d3530; --cite: #f0a64b; --cite-soft: #3a2a14; --danger: #ef8a7b;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 var(--sans); }
+button, input, textarea { font: inherit; color: inherit; }
+.page { max-width: 1180px; margin: 0 auto; padding: 28px 16px 40px; display: grid; gap: 18px; }
+.masthead { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.01em; }
+h2 { margin: 0; font-size: 17px; font-weight: 600; }
+h3 { margin: 18px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.lede { margin: 4px 0 0; color: var(--muted); max-width: 62ch; }
+.pill { font: 12px var(--mono); padding: 5px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.banner { padding: 10px 14px; border-radius: 8px; background: var(--cite-soft); border: 1px solid var(--cite); display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+.layout { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 16px; align-items: start; }
+@media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.muted { color: var(--muted); margin: 0; }
+.small { font-size: 13px; }
+.meta { font: 12px var(--mono); color: var(--muted); }
+.uploader { display: grid; gap: 10px; }
+.uploader form { display: grid; gap: 8px; }
+.tabs { display: flex; gap: 4px; background: var(--bg); padding: 3px; border-radius: 8px; }
+.tabs button { flex: 1; border: 0; background: transparent; padding: 6px; border-radius: 6px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--panel); box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); font-weight: 500; }
+input[type="text"], input:not([type]), textarea { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button[type="submit"], .askrow button { border: 0; background: var(--accent); color: #fff; padding: 9px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; }
+button:disabled { opacity: 0.55; cursor: progress; }
+.doclist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.doclist li { padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; display: grid; gap: 2px; }
+.doclist label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+.doctitle { font-weight: 500; overflow-wrap: anywhere; }
+.link { border: 0; background: none; color: var(--danger); cursor: pointer; margin-left: 8px; font: inherit; padding: 0; }
+.askform { display: grid; gap: 8px; }
+.askform label { font-weight: 600; }
+.askrow { display: flex; gap: 8px; }
+.askrow input { flex: 1; min-width: 0; }
+.examples { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: transparent; padding: 4px 10px; border-radius: 999px; font-size: 13px; cursor: pointer; }
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.answer { border-top: 1px solid var(--line); padding-top: 14px; }
+.answerhead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.answertext { font-size: 16px; white-space: pre-wrap; }
+.cite { border: 0; background: var(--cite-soft); color: var(--cite); font: 600 12px var(--mono); padding: 1px 6px; border-radius: 5px; margin: 0 1px; cursor: pointer; vertical-align: 1px; }
+.sources { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.sources li { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.sources li.cited { border-color: var(--cite); }
+.sources li.focus { border-color: var(--cite); background: var(--cite-soft); }
+.sourcehead { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.num { font: 600 12px var(--mono); color: var(--cite); }
+.excerpt { margin: 6px 0 0; font-size: 13.5px; color: var(--muted); white-space: pre-wrap; max-height: 9.5em; overflow: auto; }
+.foot { color: var(--muted); font-size: 12.5px; text-align: center; }

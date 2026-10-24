@@ -1,0 +1,26 @@
+# Render Blueprint for the API. In Render: New > Blueprint > pick this repo.
+# Secrets marked sync:false are entered in the Render dashboard, never committed.
+services:
+  - type: web
+    name: rag-job-assistant-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: EMBED_MODEL
+        value: gemini-embedding-001
+      - key: EMBED_DIM
+        value: "768"
+      - key: CHAT_MODEL
+        value: gemini-2.5-flash

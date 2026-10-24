@@ -1,0 +1,14 @@
+[
+  { "question": "Which job offers visa sponsorship?", "expectDocument": "Orbit Commerce", "expectText": "Blue Card" },
+  { "question": "What payment gateway does the Laravel role integrate?", "expectDocument": "Northwind Learning", "expectText": "Razorpay" },
+  { "question": "Which role is fully remote?", "expectDocument": "BluePeak Health", "expectText": "Remote" },
+  { "question": "What is the salary for the Berlin frontend job?", "expectDocument": "Orbit Commerce", "expectText": "EUR" },
+  { "question": "Which job wants experience with vector search or embeddings?", "expectDocument": "BluePeak Health", "expectText": "pgvector" },
+  { "question": "How are background jobs like bulk emails handled in the PHP role?", "expectDocument": "Northwind Learning", "expectText": "queues" },
+  { "question": "What testing tool does Orbit use for end-to-end tests?", "expectDocument": "Orbit Commerce", "expectText": "Playwright" },
+  { "question": "What notice period does Northwind prefer?", "expectDocument": "Northwind Learning", "expectText": "30 days" },
+  { "question": "Which company builds telemedicine software?", "expectDocument": "BluePeak Health", "expectText": "telemedicine" },
+  { "question": "Do I need to speak German for the Berlin job?", "expectDocument": "Orbit Commerce", "expectText": "German" },
+  { "question": "Which role mentions PHPUnit tests?", "expectDocument": "Northwind Learning", "expectText": "PHPUnit" },
+  { "question": "What real-time technology does the healthcare platform use?", "expectDocument": "BluePeak Health", "expectText": "WebSockets" }
+]
