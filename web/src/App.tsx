@@ -212,7 +212,8 @@ function Asker({ documentIds, onError }: { documentIds: string[]; onError: (m: s
             </span>
           </div>
           <p className="answertext">
-            {result.answer.split(/(\[\d+\])/g).map((part, i) => {
+            {result.answer.split(/(\[\d+\]|\*\*[^*]+\*\*)/g).map((part, i) => {
+              if (/^\*\*[^*]+\*\*$/.test(part)) return <strong key={i}>{part.slice(2, -2)}</strong>;
               const m = part.match(/^\[(\d+)\]$/);
               if (!m) return <span key={i}>{part}</span>;
               const n = Number(m[1]);

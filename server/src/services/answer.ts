@@ -4,9 +4,11 @@ import { retrieve } from "./retrieve.js";
 
 /**
  * Minimum cosine similarity for the best chunk before we bother asking the model at all.
- * Tuned by running scripts/eval.ts: relevant chunks scored well above this, off-topic questions below.
+ * Tuned with scripts/eval.ts on gemini-embedding-001 (768-dim): on-topic questions scored 0.566-0.727,
+ * off-topic ones 0.455-0.533, so 0.55 sits in the gap. The gap is narrow, which is why the prompt's
+ * "answer only from the sources" rule stays as a second layer.
  */
-const MIN_SIMILARITY = Number(process.env.MIN_SIMILARITY ?? 0.3);
+const MIN_SIMILARITY = Number(process.env.MIN_SIMILARITY ?? 0.55);
 
 export async function answerQuestion(question: string, documentIds?: string[]) {
   const started = Date.now();

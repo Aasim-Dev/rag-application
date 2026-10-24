@@ -35,11 +35,22 @@ connection and locks while waiting on the network, which is how connection pools
 So: embed first, then write the document and all chunks in one short transaction. If embedding fails, nothing
 is written. That keeps the operation atomic without a long transaction.
 
-## 6. A relevance guardrail before calling the LLM
-If the best chunk's cosine similarity is below `MIN_SIMILARITY` (0.3 by default), the API returns
-"not found" **without** calling the model. This stops the model from improvising answers to off-topic
-questions and saves quota. The threshold is chosen with `npm run eval`, which prints the best similarity
-for deliberately off-topic questions.
+## 6. A relevance guardrail before calling the LLM, tuned with data
+If the best chunk's cosine similarity is below `MIN_SIMILARITY`, the API returns "not found" **without**
+calling the model. This stops the model from improvising answers to off-topic questions and saves quota.
+
+I first guessed 0.3. Measuring proved that wrong. With `gemini-embedding-001` (768 dimensions),
+`npm run eval` showed:
+
+| Questions | Best similarity |
+|---|---|
+| 12 on-topic questions | 0.566 – 0.727 |
+| 5 off-topic questions ("capital of France", "pasta recipe", ...) | 0.455 – 0.533 |
+
+Everything scores fairly high with this model, so 0.3 would never trigger. **0.55** sits in the gap.
+The gap is narrow, so the system prompt's rule (answer only from the sources, or say exactly
+"I couldn't find that...") remains a second, independent layer. Changing the embedding model means
+re-running the eval and re-tuning; the value is an environment variable for that reason.
 
 ## 7. Grounding and citations in the prompt
 The system prompt restricts the model to the numbered sources, requires a citation per claim, and defines
@@ -56,6 +67,9 @@ Document and query embeddings use different task types (`RETRIEVAL_DOCUMENT` / `
 these models are trained for.
 
 ## 9. Evaluation instead of eyeballing
+Current result on the sample set: **hit@5 = 100%, MRR = 0.96** (the right passage ranked first for
+11 of 12 questions, second for the other).
+
 `samples/eval-set.json` holds labelled questions (expected document + expected fact). `npm run eval` reports:
 - **hit@5:** did a correct chunk make the top 5?
 - **MRR:** how high was it ranked (1.0 = always first)?
