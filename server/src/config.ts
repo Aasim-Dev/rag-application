@@ -10,7 +10,8 @@ const Env = z.object({
   EMBED_DIM: z.coerce.number().int().positive().default(768),
   CHAT_MODEL: z.string().default("gemini-3.5-flash"),
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
-  MAX_UPLOAD_MB: z.coerce.number().positive().default(5),
+  // 4 MB keeps uploads under Vercel's 4.5 MB request-body limit for functions.
+  MAX_UPLOAD_MB: z.coerce.number().positive().default(4),
 });
 
 const parsed = Env.safeParse(process.env);

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "rag-job-assistant-api": {
+      "root": "server",
+      "framework": "express",
+      "entrypoint": "src/index.ts",
+      "buildCommand": "npm run build"
+    },
+    "web": {
+      "root": "web",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": { "service": "rag-job-assistant-api" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "web" }
+    }
+  ]
+}

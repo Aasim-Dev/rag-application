@@ -10,9 +10,22 @@ import { UnsupportedFileError } from "./services/extract.js";
 import { EmptyDocumentError } from "./services/ingest.js";
 
 const app = express();
-app.set("trust proxy", 1); // behind Render's proxy: lets rate limiting see the real client IP
+app.set("trust proxy", 1); // behind Render's / Vercel's proxy: lets rate limiting see the real client IP
 app.use(cors({ origin: config.CORS_ORIGIN.split(",").map((o) => o.trim()) }));
 app.use(express.json({ limit: "1mb" }));
+
+// Create the schema once per process, before the first request is handled. Lazy instead of at
+// startup because on Vercel the app runs as a serverless function with no separate startup step.
+// A failed attempt is forgotten so the next request retries instead of failing forever.
+let schemaReady: Promise<void> | undefined;
+app.use((_req, _res, next) => {
+  schemaReady ??= migrate().catch((err) => {
+    schemaReady = undefined;
+    throw err;
+  });
+  schemaReady.then(() => next(), next);
+});
+
 app.use("/api", router);
 
 /** One place that turns errors into clean JSON responses with the right status code. */
@@ -35,8 +48,11 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   }
 });
 
-await migrate();
-const server = app.listen(config.PORT, () => console.log(`API listening on :${config.PORT}`));
+// On Vercel the platform calls the exported app; everywhere else (local dev, Render) we listen ourselves.
+if (!process.env.VERCEL) {
+  const server = app.listen(config.PORT, () => console.log(`API listening on :${config.PORT}`));
+  // Graceful shutdown: finish in-flight requests, then close DB connections (Render sends SIGTERM on deploy).
+  process.on("SIGTERM", () => server.close(() => pool.end().then(() => process.exit(0))));
+}
 
-// Graceful shutdown: finish in-flight requests, then close DB connections (Render sends SIGTERM on deploy).
-process.on("SIGTERM", () => server.close(() => pool.end().then(() => process.exit(0))));
+export default app;
