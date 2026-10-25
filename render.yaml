@@ -16,6 +16,7 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
+      # e.g. https://rag-application-smoky.vercel.app,https://rag-application-*.vercel.app
       - key: CORS_ORIGIN
         sync: false
       - key: EMBED_MODEL

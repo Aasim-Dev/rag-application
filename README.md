@@ -74,9 +74,11 @@ npm run dev                 # http://localhost:5173 (proxies /api to :4000)
 
 1. **Database:** create a Neon project and copy the connection string (pgvector is available on Neon).
 2. **API on Render:** New > Blueprint > select this repo (uses `render.yaml`). Set `DATABASE_URL`,
-   `GEMINI_API_KEY`, and `CORS_ORIGIN` (your Vercel URL).
-3. **Web on Vercel:** import the repo, set **Root Directory** to `web`, and add the environment variable
-   `VITE_API_URL` = your Render URL. Deploy.
+   `GEMINI_API_KEY`, and `CORS_ORIGIN`, e.g.
+   `https://your-app.vercel.app,https://your-app-*.vercel.app` (`*` also allows Vercel preview URLs).
+3. **Web on Vercel:** import the repo (`vercel.json` deploys the `web` folder), add the environment
+   variable `VITE_API_URL` = your Render URL, and deploy. `VITE_*` variables are baked in at build time,
+   so redeploy after changing it.
 4. Run `npm run seed` locally against the production `DATABASE_URL` to load the demo documents.
 
 ## API

@@ -9,9 +9,25 @@ import { router } from "./routes.js";
 import { UnsupportedFileError } from "./services/extract.js";
 import { EmptyDocumentError } from "./services/ingest.js";
 
+/**
+ * CORS_ORIGIN is a comma-separated list. An entry may contain "*" as a wildcard, e.g.
+ * "https://rag-application-*.vercel.app" to allow Vercel's per-commit preview URLs as well.
+ */
+function allowedOrigins(setting: string): (string | RegExp)[] {
+  return setting
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean)
+    .map((o) =>
+      o.includes("*")
+        ? new RegExp(`^${o.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[a-z0-9-]+")}$`)
+        : o,
+    );
+}
+
 const app = express();
 app.set("trust proxy", 1); // behind Render's / Vercel's proxy: lets rate limiting see the real client IP
-app.use(cors({ origin: config.CORS_ORIGIN.split(",").map((o) => o.trim()) }));
+app.use(cors({ origin: allowedOrigins(config.CORS_ORIGIN) }));
 app.use(express.json({ limit: "1mb" }));
 
 // A missing setting on Vercel: say exactly which one instead of crashing with an empty 500.
