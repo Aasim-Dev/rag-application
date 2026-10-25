@@ -1,5 +1,5 @@
 // VITE_API_URL is the deployed API (e.g. https://your-api.onrender.com). Empty in dev: Vite proxies /api.
-const BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+const BASE = (import.meta.env.API_URL ?? "").replace(/\/$/, "");
 
 export interface DocumentInfo {
   id: string;
